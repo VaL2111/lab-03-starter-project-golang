@@ -7,13 +7,15 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server .
+RUN CGO_ENABLED=0 GOOS=linux go build -o server .
 
-FROM scratch
+FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /app
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/templates ./templates
+
+USER nonroot
 
 CMD ["/app/server"]

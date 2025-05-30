@@ -7,13 +7,13 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o server .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server .
 
-FROM debian:bullseye-slim
+FROM scratch
 
 WORKDIR /app
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/templates ./templates
 
-CMD ["./server"]
+CMD ["/app/server"]
